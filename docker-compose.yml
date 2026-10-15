@@ -1,0 +1,37 @@
+# LAMINAR local / server stack.
+#   docker compose up --build              -> dashboard only (Stage 1)
+#   docker compose --profile db up --build -> dashboard + PostgreSQL (Stage 2 prep)
+services:
+  web:
+    build: .
+    image: laminar-web:latest
+    ports:
+      - "3000:3000"
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      MARKET_DATA_MODE: ${MARKET_DATA_MODE:-live}
+    restart: unless-stopped
+
+  db:
+    image: postgres:17-alpine
+    profiles: ["db"]
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-laminar}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+      POSTGRES_DB: ${POSTGRES_DB:-laminar}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./db/schema.sql:/docker-entrypoint-initdb.d/001_schema.sql:ro
+    # Bound to localhost only; never expose the database publicly.
+    ports:
+      - "127.0.0.1:5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER:-laminar}"]
+      interval: 10s
+      retries: 5
+    restart: unless-stopped
+
+volumes:
+  pgdata:
