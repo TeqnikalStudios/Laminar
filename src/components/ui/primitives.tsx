@@ -1,8 +1,12 @@
-import type { ReactNode } from "react";
+import type { HTMLAttributes, ReactNode } from "react";
 import { formatPct, trendClass } from "@/lib/format";
 
-export function Panel({ children, className = "", glow = false }: { children: ReactNode; className?: string; glow?: boolean }) {
-  return <section className={`panel ${glow ? "panel-glow" : ""} ${className}`}>{children}</section>;
+export function Panel({ children, className = "", glow = false, ...rest }: { children: ReactNode; className?: string; glow?: boolean } & HTMLAttributes<HTMLElement>) {
+  return (
+    <section {...rest} className={`panel ${glow ? "panel-glow" : ""} ${className}`}>
+      {children}
+    </section>
+  );
 }
 
 export function PanelHeader({ title, subtitle, right }: { title: string; subtitle?: ReactNode; right?: ReactNode }) {

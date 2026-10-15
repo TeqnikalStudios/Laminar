@@ -52,7 +52,7 @@ export function MarketsView() {
           ].map(([label, value]) => (
             <Panel key={label as string} className="px-4 py-3">
               <p className="text-[11px] text-muted">{label}</p>
-              <p className="num mt-1 text-base font-semibold">{value}</p>
+              <p className="num mt-1 text-[16px] font-semibold">{value}</p>
             </Panel>
           ))}
         </div>
