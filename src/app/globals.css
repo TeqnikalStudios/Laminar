@@ -1,0 +1,113 @@
+@import "tailwindcss";
+
+/* LAMINAR design tokens. Dark-first "financial terminal" palette with a
+   cyan-to-violet flow accent. Tailwind utilities are generated from @theme. */
+@theme {
+  --color-void: #04060c;
+  --color-base: #070a13;
+  --color-panel: #0b1020;
+  --color-panel-2: #10162a;
+  --color-line: rgb(148 163 255 / 0.09);
+  --color-line-strong: rgb(148 163 255 / 0.18);
+  --color-ink: #e6ebff;
+  --color-muted: #8a93b5;
+  --color-faint: #5b6488;
+  --color-flow: #22d3ee;
+  --color-flow-2: #8b5cf6;
+  --color-up: #19d9a0;
+  --color-down: #ff5c7c;
+  --color-warn: #f5b84b;
+
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  --animate-rise: rise 0.5s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  --animate-shimmer: shimmer 1.6s linear infinite;
+  --animate-pulse-dot: pulse-dot 2s ease-in-out infinite;
+
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: none; }
+  }
+  @keyframes shimmer {
+    from { background-position: -400px 0; }
+    to { background-position: 400px 0; }
+  }
+  @keyframes pulse-dot {
+    0%, 100% { box-shadow: 0 0 0 0 rgb(25 217 160 / 0.5); }
+    50% { box-shadow: 0 0 0 5px rgb(25 217 160 / 0); }
+  }
+}
+
+html {
+  color-scheme: dark;
+  background: var(--color-void);
+}
+
+body {
+  background:
+    radial-gradient(1200px 600px at 85% -10%, rgb(139 92 246 / 0.12), transparent 60%),
+    radial-gradient(900px 500px at -10% 10%, rgb(34 211 238 / 0.08), transparent 60%),
+    var(--color-void);
+  background-attachment: fixed;
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+.num {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+}
+
+/* Glass panel with a hairline gradient edge. */
+.panel {
+  position: relative;
+  background: linear-gradient(180deg, rgb(16 22 42 / 0.82), rgb(11 16 32 / 0.82));
+  border: 1px solid var(--color-line);
+  border-radius: 16px;
+  backdrop-filter: blur(12px);
+}
+.panel-glow::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, rgb(34 211 238 / 0.45), transparent 35%, transparent 65%, rgb(139 92 246 / 0.45));
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+.flow-text {
+  background: linear-gradient(90deg, var(--color-flow), var(--color-flow-2));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.skeleton {
+  border-radius: 6px;
+  background: linear-gradient(90deg, rgb(255 255 255 / 0.04), rgb(255 255 255 / 0.09), rgb(255 255 255 / 0.04));
+  background-size: 800px 100%;
+  animation: var(--animate-shimmer);
+}
+
+.scroll-thin {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-line-strong) transparent;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-flow);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
