@@ -26,8 +26,9 @@
   --animate-pulse-dot: pulse-dot 2s ease-in-out infinite;
 
   @keyframes rise {
-    from { opacity: 0; transform: translateY(8px); }
-    to { opacity: 1; transform: none; }
+    /* `translate`, not `transform`, so it composes with .tilt */
+    from { opacity: 0; translate: 0 8px; }
+    to { opacity: 1; translate: none; }
   }
   @keyframes shimmer {
     from { background-position: -400px 0; }
@@ -67,6 +68,111 @@ body {
   border: 1px solid var(--color-line);
   border-radius: 16px;
   backdrop-filter: blur(12px);
+  /* Layered depth: a lit top edge, a contact shadow and a long soft drop. */
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.06),
+    inset 0 -1px 0 rgb(0 0 0 / 0.35),
+    0 1px 2px rgb(0 0 0 / 0.5),
+    0 18px 40px -18px rgb(0 0 0 / 0.85),
+    0 40px 80px -40px rgb(34 18 80 / 0.45);
+}
+
+/* Cards that lift and tilt towards the pointer (see components/ui/Tilt). */
+.tilt {
+  transform: perspective(900px) rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg)) translateY(var(--tilt-lift, 0px));
+  transform-style: preserve-3d;
+  transition: transform 0.25s cubic-bezier(0.2, 0.7, 0.2, 1), box-shadow 0.25s, border-color 0.25s;
+  will-change: transform;
+}
+.tilt:hover {
+  --tilt-lift: -3px;
+  border-color: var(--color-line-strong);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.08),
+    0 2px 4px rgb(0 0 0 / 0.5),
+    0 28px 50px -20px rgb(0 0 0 / 0.9),
+    0 0 0 1px rgb(34 211 238 / 0.12),
+    0 20px 60px -30px rgb(34 211 238 / 0.35);
+}
+.tilt::after {
+  /* Specular highlight that follows the pointer. */
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(320px circle at var(--tilt-mx, 50%) var(--tilt-my, 0%), rgb(255 255 255 / 0.07), transparent 60%);
+  opacity: 0;
+  transition: opacity 0.25s;
+  pointer-events: none;
+}
+.tilt:hover::after {
+  opacity: 1;
+}
+
+/* ── Market floor (isometric hero) ─────────────────────────── */
+.mf-stage {
+  background:
+    radial-gradient(70% 60% at 45% 55%, rgb(139 92 246 / 0.14), transparent 70%),
+    linear-gradient(180deg, rgb(16 22 42 / 0.9), rgb(7 10 19 / 0.95));
+}
+.mf-backdrop {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgb(148 163 255 / 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(148 163 255 / 0.05) 1px, transparent 1px);
+  background-size: 36px 36px;
+  mask-image: radial-gradient(80% 70% at 50% 60%, #000 20%, transparent 75%);
+}
+.mf-tower {
+  animation: mf-drop 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+.mf-tower .mf-body {
+  transition: transform 0.25s cubic-bezier(0.2, 0.7, 0.2, 1), filter 0.25s;
+}
+.mf-tower[data-active] .mf-body {
+  transform: translateY(-10px);
+  filter: drop-shadow(0 0 14px rgb(34 211 238 / 0.35));
+}
+.mf-feed {
+  animation: mf-flow 1.2s linear infinite;
+}
+.mf-label {
+  transition: background-color 0.2s, border-color 0.2s;
+  box-shadow: 0 6px 16px -6px rgb(0 0 0 / 0.8);
+}
+.mf-card {
+  border-radius: 14px;
+  border: 1px solid var(--color-line);
+  background: linear-gradient(180deg, rgb(22 28 54 / 0.85), rgb(11 16 32 / 0.85));
+  backdrop-filter: blur(12px);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.06), 0 16px 32px -16px rgb(0 0 0 / 0.8);
+}
+.mf-knob {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 999px;
+  border: 1px solid var(--color-line-strong);
+  background: linear-gradient(180deg, #1a2142, #0d1226);
+  color: var(--color-muted);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.1), 0 6px 14px -6px rgb(0 0 0 / 0.9);
+  transition: color 0.2s, transform 0.15s;
+}
+.mf-knob:hover {
+  color: var(--color-ink);
+}
+.mf-knob:active {
+  transform: translateY(1px);
+}
+@keyframes mf-drop {
+  from { opacity: 0; transform: translateY(-40px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes mf-flow {
+  to { stroke-dashoffset: -18; }
 }
 .panel-glow::before {
   content: "";

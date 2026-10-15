@@ -5,8 +5,10 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 import { CandleChart } from "@/components/market/CandleChart";
 import { CoinIcon } from "@/components/market/CoinIcon";
+import { MarketFloor } from "@/components/market/MarketFloor";
 import { MarketTable } from "@/components/market/MarketTable";
 import { Sparkline } from "@/components/market/Sparkline";
+import { tiltProps } from "@/components/ui/Tilt";
 import { Change, ErrorNote, PageHeader, Panel, PanelHeader, Segmented, Skeleton } from "@/components/ui/primitives";
 import { formatCompactUsd, formatPct, formatUsd } from "@/lib/format";
 import { useCandles, useCoins, useGlobal, useMarkets, useTrending } from "@/modules/market/client/useApi";
@@ -34,6 +36,10 @@ export function OverviewView() {
       {markets.error && !coins && <ErrorNote message={markets.error} onRetry={markets.refresh} />}
 
       <GlobalStrip coins={coins} global={global.data} />
+
+      <div className="mt-5">
+        <MarketFloor coins={coins} />
+      </div>
 
       <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-5">
         {featured.length
@@ -93,7 +99,7 @@ function GlobalStrip({ coins, global }: { coins: CoinMarket[] | undefined; globa
   return (
     <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
       {stats.map((s, i) => (
-        <Panel key={s.label} glow={i === 0} className="animate-rise px-5 py-4">
+        <Panel key={s.label} glow={i === 0} className="tilt animate-rise px-5 py-4" {...tiltProps({ animationDelay: `${i * 50}ms` })}>
           <p className="text-[11px] tracking-wide text-muted uppercase" title={s.hint}>
             {s.label}
           </p>
@@ -107,7 +113,7 @@ function GlobalStrip({ coins, global }: { coins: CoinMarket[] | undefined; globa
 
 function FeaturedCard({ coin, delay }: { coin: CoinMarket; delay: number }) {
   return (
-    <Link href={`/charts/${coin.id}`} className="panel group animate-rise block overflow-hidden p-4 transition-colors hover:border-line-strong" style={{ animationDelay: `${delay}ms` }}>
+    <Link href={`/charts/${coin.id}`} className="panel tilt group animate-rise block overflow-hidden p-4" {...tiltProps({ animationDelay: `${delay}ms` })}>
       <div className="flex items-center gap-2.5">
         <CoinIcon src={coin.image} symbol={coin.symbol} size={26} />
         <div className="min-w-0 flex-1">
